@@ -1,5 +1,5 @@
 import {RouletteField} from "../models/RouletteField";
-import {RouletteWinType} from "../enums/RouletteWinTypes";
+import {RouletteWinType} from "@shared/enums/RouletteWinTypes";
 
 export const rouletteWheel: RouletteField[] = [
     new RouletteField(0, [

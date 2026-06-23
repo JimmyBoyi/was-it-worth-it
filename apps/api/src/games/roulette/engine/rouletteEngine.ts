@@ -1,9 +1,10 @@
 import {RouletteField} from "../models/RouletteField";
 import {RouletteBetDefinitions, RouletteBetDefinitionType} from "../data/RouletteBetDefinitions";
-import {RouletteWinType} from "../enums/RouletteWinTypes";
+import {RouletteWinType} from "@shared/enums/RouletteWinTypes";
 import {rouletteWheel} from "../data/rouletteWheel";
 
 export type RouletteEngineSpinResult = {
+    profit: number,
     payout: number;
     probability: number;
     rolledField: RouletteField;
@@ -13,7 +14,8 @@ export class RouletteEngine {
     public spin(betType: RouletteWinType | number, amountBet: number): RouletteEngineSpinResult{
         let result = this.simulateSpin();
         let betDefinition = this.evaluateBet(betType, result);
-        return { payout: amountBet * betDefinition.payoutMultiplier, probability: betDefinition.probability, rolledField: result };
+        const payout = amountBet * betDefinition.payoutMultiplier;
+        return { profit: payout - amountBet, payout: payout, probability: betDefinition.probability, rolledField: result };
     }
     
     private simulateSpin(): RouletteField{
@@ -35,8 +37,9 @@ export class RouletteEngine {
 
         return isWin
             ? definitionType
-            : {payoutMultiplier: -1, probability: definitionType.probability};
+            : {payoutMultiplier: 0, probability: definitionType.probability};
     }
+    
     private getBetDefinition(betType: RouletteWinType | number, isNumberBet: boolean): RouletteBetDefinitionType{
         let enumValue: RouletteWinType;
 

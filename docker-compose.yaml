@@ -1,0 +1,17 @@
+# docker-compose.yml
+services:
+  postgres:
+    image: postgres:17
+    container_name: was-it-worth-it-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: FullstackWebDevEnjoyerOfDevelopingSoftware
+      POSTGRES_PASSWORD: CleanSoftwareBuiltScalableLR95
+      POSTGRES_DB: was_it_worth_it
+    ports:
+      - "5456:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

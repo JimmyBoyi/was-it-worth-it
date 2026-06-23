@@ -1,4 +1,4 @@
-import {RouletteWinType} from "../enums/RouletteWinTypes";
+import {RouletteWinType} from "@shared/enums/RouletteWinTypes";
 
 export class RouletteField {
     constructor(

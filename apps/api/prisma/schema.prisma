@@ -1,14 +1,22 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-model Session {
+enum GameType {
+  ROULETTE
+  CSGO
+  RIFTBOUND
+  SUMMONERS_WAR
+}
+
+model Bets {
   id            String   @id @default(cuid())
+  userId        String
   gameType      GameType
   betAmount     Float
   profit        Float
