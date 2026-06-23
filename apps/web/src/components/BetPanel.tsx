@@ -55,9 +55,9 @@ export default function BetPanel() {
 
             {result && (
                 <div>
-                    <p>Win: {result.payoutMultiplier > 0 ? "YES" : "NO"}</p>
-                    <p>Payout: {result.profit}</p>
-                    <p>Profit: {result.profit - amount}</p>
+                    <p>Win: {result.profit > 0 ? "YES" : "NO"}</p>
+                    <p>Payout: {result.payout}</p>
+                    <p>Profit: {result.profit}</p>
                     <p>Number: {result.rolledNumber} {result.colour}</p>
                 </div>
             )}

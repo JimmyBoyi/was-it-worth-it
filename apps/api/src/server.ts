@@ -9,9 +9,10 @@ import { Request, Response } from "express";
 import cors from "cors";
 import { RouletteEngine } from "@games/roulette/engine/rouletteEngine";
 import { RouletteWinType } from "@shared/enums/RouletteWinTypes";
-import {prisma} from "./lib/prisma";
+import {prisma} from "@lib/prisma";
 import {GameType} from "./generated/prisma/enums";
 import {RouletteSpinRequestDto} from "@shared/schemas/RouletteSpinRequestSchema";
+import {activeClients, broadcastStats} from "./utils/sseManager";
 
 const app = express();
 const rouletteEngine = new RouletteEngine();
@@ -20,6 +21,24 @@ app.use(cors({
     origin: "http://localhost:5173",
 }));
 app.use(express.json());
+
+app.get("/api/roulette/live-stats", (req: Request, res: Response) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
+    activeClients.push(res);
+    console.log(`👥 Client connected to SSE. Total active: ${activeClients.length}`);
+
+    req.on("close", () => {
+        const index = activeClients.indexOf(res);
+        if (index !== -1) {
+            activeClients.splice(index, 1);
+        }
+        console.log(`👤 Client disconnected from SSE. Total remaining: ${activeClients.length}`);
+    });
+});
 
 app.post(
     "/api/roulette/spin",
@@ -60,6 +79,14 @@ app.post(
         console.log("B", data);
 
         const savedSpin = await prisma.bets.create({data});
+        
+        const aggregations = await prisma.bets.aggregate({
+            _sum: {
+                profit: true,
+            },
+        });
+        const totalGlobalProfit = aggregations._sum.profit || 0;
+        broadcastStats(totalGlobalProfit);
 
         console.log("C");
 
@@ -71,7 +98,8 @@ app.post(
             spinId: savedSpin.id,
             rolledNumber: result.rolledField.number,
             colour: fieldColour,
-            profit: result.payout
+            profit: result.profit,
+            payout: result.payout,
         });
 
     } catch (error) {
