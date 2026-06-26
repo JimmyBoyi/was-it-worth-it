@@ -16,10 +16,11 @@ enum GameType {
 
 model Bets {
   id            String   @id @default(cuid())
-  userId        String
+  userId        String?
   gameType      GameType
   betAmount     Float
   profit        Float
   createdAt     DateTime @default(now())
   details       Json
+  sessionId     String?
 }

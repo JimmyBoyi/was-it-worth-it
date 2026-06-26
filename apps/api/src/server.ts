@@ -11,7 +11,8 @@ import { RouletteWinType } from "@shared/enums/RouletteWinTypes";
 import {prisma} from "@lib/prisma";
 import {GameType} from "./generated/prisma/enums";
 import {RouletteSpinRequestDto} from "@shared/schemas/RouletteSpinRequestSchema";
-import {activeClients, broadcastStats} from "./utils/sseManager";
+import {activeClients, streamGlobalProfit} from "./utils/sseManager";
+import {RouletteSpinResponseDto, RouletteSpinResponseSchema} from "@shared/schemas/RouletteSpinResponseSchema";
 
 const app = express();
 const rouletteEngine = new RouletteEngine();
@@ -72,26 +73,20 @@ app.post(
         };
 
         const savedSpin = await prisma.bets.create({data});
-        
-        const aggregations = await prisma.bets.aggregate({
-            _sum: {
-                profit: true,
-            },
-        });
-        const totalGlobalProfit = aggregations._sum.profit || 0;
-        broadcastStats(totalGlobalProfit);
+        await streamGlobalProfit();
 
         const fieldColour = result.rolledField.possibleWinList.includes(RouletteWinType.RED) ? 
             RouletteWinType.RED : result.rolledField.possibleWinList.includes(RouletteWinType.BLACK) ? 
                 RouletteWinType.BLACK : RouletteWinType.GREEN
         
-        return res.status(200).json({
+        const response: RouletteSpinResponseDto = {
             spinId: savedSpin.id,
             rolledNumber: result.rolledField.number,
-            colour: fieldColour,
+            probability: result.probability,
             profit: result.profit,
             payout: result.payout,
-        });
+        }
+        return res.status(200).json(response);
 
     } catch (error) {
         console.error(error);
