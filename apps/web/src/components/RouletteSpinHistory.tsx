@@ -24,7 +24,7 @@ export default function RollHistory({ spinHistory }: RollHistoryProps) {
                 ) : (
                     spinHistory.map((spin) => {
                         const isWin = spin.payout > 0;
-                        const bgColour = getRouletteColour(spin.rolledNumber);
+                        const bgColour = getRouletteColour(spin.rolledNumber.toString());
 
                         return (
                             <div

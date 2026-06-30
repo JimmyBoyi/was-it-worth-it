@@ -13,6 +13,7 @@ import {GameType} from "./generated/prisma/enums";
 import {RouletteSpinRequestDto} from "@shared/schemas/RouletteSpinRequestSchema";
 import {activeClients, streamGlobalProfit} from "./utils/sseManager";
 import {RouletteSpinResponseDto, RouletteSpinResponseSchema} from "@shared/schemas/RouletteSpinResponseSchema";
+import {RouletteBet} from "@shared/types/roulette";
 
 const app = express();
 const rouletteEngine = new RouletteEngine();
@@ -47,24 +48,21 @@ app.post(
         res: Response
     ) => {
     try {
-        const {betType, amountBet, userId} = req.body;
-        if (betType === undefined || amountBet === undefined) {
+        const {bets, userId} = req.body;
+        if (bets === undefined) {
             return res.status(400).json({
                 error: "betType and amountBet are required"
             });
         }
         
-        const result = rouletteEngine.spin(
-            betType as RouletteWinType | number,
-            Number(amountBet)
-        );
+        const result = rouletteEngine.spin(bets as RouletteBet[]);
 
         let userIdOrZero = userId === undefined ? "0" : userId;
 
         const data = {
             userId: userIdOrZero,
             gameType: GameType.ROULETTE,
-            betAmount: amountBet,
+            betAmount: result.totalAmountBet,
             profit: result.profit,
             details: {
                 rolledField: result.rolledField.number,

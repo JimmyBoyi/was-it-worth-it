@@ -1,13 +1,20 @@
 import { z } from "zod";
 import {RouletteWinType} from "../enums/RouletteWinTypes";
 
-export const RouletteSpinRequestSchema = z.object({
-    betType: z.union([
-        z.enum(RouletteWinType),
+const IndividualBetSchema = z.object({
+    type: z.union([
+        z.string(),
         z.number().int().min(0).max(36)
     ]),
-    amountBet: z.number().min(0).max(40),
-    userId: z.string()
+    amount: z.number().int().positive().max(50),
+});
+
+export const RouletteSpinRequestSchema = z.object({
+    userId: z.string().uuid(),
+    bets: z.union([
+        IndividualBetSchema,
+        z.array(IndividualBetSchema)
+    ])
 });
 
 export type RouletteSpinRequestDto = z.infer<typeof RouletteSpinRequestSchema>;

@@ -1,8 +1,10 @@
 import {RouletteSpinRequestDto} from "@shared/schemas/RouletteSpinRequestSchema";
 import {RouletteWinType} from "@shared/enums/RouletteWinTypes";
+import {RouletteBet} from "@shared/types/roulette";
 
-export async function spinRoulette(betType: RouletteWinType | number, amountBet: number) {
-    const requestBody: RouletteSpinRequestDto = {betType: betType, amountBet: amountBet, userId: "1ABC"}
+export async function spinRoulette(bets: RouletteBet[]) {
+    console.log(bets);
+    const requestBody: RouletteSpinRequestDto = {bets, userId: "1ABC"}
     const res = await fetch("http://localhost:3001/api/roulette/spin", {
         method: "POST",
         headers: {
