@@ -17,6 +17,14 @@ import {RouletteBet} from "@shared/types/roulette";
 const app = express();
 const rouletteEngine = new RouletteEngine();
 
+async function pushStatsWhenFirstConnecting(){
+    try {
+        await streamGlobalStats();
+    } catch (error) {
+        console.error("Failed to send initial SSE stats:", error);
+    }
+}
+
 app.use(cors({
     origin: "http://localhost:5173",
 }));
@@ -29,14 +37,13 @@ app.get("/api/roulette/live-stats", (req: Request, res: Response) => {
     res.flushHeaders();
 
     activeClients.push(res);
-    console.log(`Client connected to SSE. Total active: ${activeClients.length}`);
 
+    pushStatsWhenFirstConnecting();
     req.on("close", () => {
         const index = activeClients.indexOf(res);
         if (index !== -1) {
             activeClients.splice(index, 1);
         }
-        console.log(`Client disconnected from SSE. Total remaining: ${activeClients.length}`);
     });
 });
 
