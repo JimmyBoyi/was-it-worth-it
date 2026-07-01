@@ -8,6 +8,7 @@ import {Chip} from "@roulette/components/RouletteChip";
 import {getRouletteColour} from "@roulette/utils/rouletteColourCalculator";
 import {getCompiledBets} from "@roulette/utils/tableBridge";
 import {WHEEL_CONFIGS} from "../constants/rollingStripWheelConfigs";
+import {sessionStore} from "../utils/sessionStore";
 
 export default function RoulettePage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -19,10 +20,11 @@ export default function RoulettePage() {
         const bets = getCompiledBets();
         
         try {
-            const res = await spinRoulette(bets);
+            const res: RouletteSpinResponseDto = await spinRoulette(bets);
             spinStripAnimate(res.rolledNumber.toString());
             setTimeout(() => {
                 setSpinHistory((prev) => [res, ...prev]);
+                sessionStore.addProfit(res.profit);
                 setIsLoading(false);
             }, 5100);
         } catch (e) {

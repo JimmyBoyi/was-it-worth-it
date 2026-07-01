@@ -11,7 +11,7 @@ import { RouletteWinType } from "@shared/enums/RouletteWinTypes";
 import {prisma} from "@lib/prisma";
 import {GameType} from "./generated/prisma/enums";
 import {RouletteSpinRequestDto} from "@shared/schemas/RouletteSpinRequestSchema";
-import {activeClients, streamGlobalProfit} from "./utils/sseManager";
+import {activeClients, streamGlobalStats} from "./utils/sseManager";
 import {RouletteSpinResponseDto, RouletteSpinResponseSchema} from "@shared/schemas/RouletteSpinResponseSchema";
 import {RouletteBet} from "@shared/types/roulette";
 
@@ -71,7 +71,7 @@ app.post(
         };
 
         const savedSpin = await prisma.bets.create({data});
-        await streamGlobalProfit();
+        await streamGlobalStats();
         
         const response: RouletteSpinResponseDto = {
             spinId: savedSpin.id,

@@ -1,14 +1,19 @@
 import RoulettePage from "./pages/RoulettePage";
-import {subscribeToGlobalStats} from "./utils/LiveStatsService";
+import {GlobalStatsPayload, subscribeToGlobalStats} from "./utils/LiveStatsService";
 import {useEffect, useState} from "react";
+import {useSessionProfit} from "./utils/sessionStore";
 
 export default function App() {
     const [globalHouseProfit, setGlobalHouseProfit] = useState<number>(0);
+    const [totalBetsCount, setTotalBetsCount] = useState<number>(0);
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const sessionProfit = useSessionProfit();
 
     useEffect(() => {
-        const unsubscribe = subscribeToGlobalStats((latestTotal) => {
-            setGlobalHouseProfit(latestTotal);
+        const unsubscribe = subscribeToGlobalStats((latestStats: GlobalStatsPayload) => {
+            setGlobalHouseProfit(latestStats.globalProfit);
+            setTotalBetsCount(latestStats.totalEntries);
         });
 
         return () => unsubscribe();
@@ -21,8 +26,8 @@ export default function App() {
                     <div></div>
                     <h1 className="text-center font-bold text-xl">Is It Worth It?</h1>
                     <div className="flex flex-col items-end text-right">
-                        <p>Global Players Profit: <strong>${globalHouseProfit.toFixed(2)}</strong></p>
-                        <p className="text-sm text-gray-400">This session Profit: <strong>1,245</strong></p>
+                        <p>Global Players Profit: <strong>${globalHouseProfit.toFixed(2)}</strong> over {totalBetsCount} spins</p>
+                        <p className="text-sm text-gray-400">This session Profit: <strong>${sessionProfit}</strong></p>
                         {isLoggedIn ? <p className="text-sm text-gray-400">Your total Profit: <strong>42</strong></p>
                             : <p className="text-sm text-gray-400">Log in to see personal total profit</p> }
                     </div>
