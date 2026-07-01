@@ -110,3 +110,14 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+@theme {
+  --color-roulette-green: #008751;
+  --color-roulette-green-hover: #00a362;
+
+  --color-roulette-red: #e51c23;
+  --color-roulette-red-hover: #f44336;
+
+  --color-roulette-black: #111111;
+  --color-roulette-black-hover: #222222;
+}

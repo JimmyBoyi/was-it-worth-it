@@ -1,4 +1,4 @@
-import { useImperativeHandle, useRef, useState, forwardRef } from 'react';
+import { useImperativeHandle, useRef, forwardRef } from 'react';
 
 interface DropZoneProps {
     type: string;
@@ -8,7 +8,6 @@ interface DropZoneProps {
 
 export const BettingZone = forwardRef<HTMLDivElement, DropZoneProps>(
     ({ type, label, className = "w-24 h-24" }, ref) => {
-        const [totalBet, setTotalBet] = useState(0);
         const internalRef = useRef<HTMLDivElement>(null);
 
         useImperativeHandle(ref, () => internalRef.current!);
@@ -22,12 +21,6 @@ export const BettingZone = forwardRef<HTMLDivElement, DropZoneProps>(
                 <span className="text-white font-bold text-lg">
                     {label || type}
                 </span>
-
-                {totalBet > 0 && (
-                    <span className="absolute bottom-1 bg-amber-500 text-neutral-950 text-xs font-extrabold px-1.5 rounded-full shadow">
-                        ${totalBet}
-                    </span>
-                )}
             </div>
         );
     }

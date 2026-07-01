@@ -72,15 +72,10 @@ app.post(
 
         const savedSpin = await prisma.bets.create({data});
         await streamGlobalProfit();
-
-        const fieldColour = result.rolledField.possibleWinList.includes(RouletteWinType.RED) ? 
-            RouletteWinType.RED : result.rolledField.possibleWinList.includes(RouletteWinType.BLACK) ? 
-                RouletteWinType.BLACK : RouletteWinType.GREEN
         
         const response: RouletteSpinResponseDto = {
             spinId: savedSpin.id,
             rolledNumber: result.rolledField.number,
-            probability: result.probability,
             profit: result.profit,
             payout: result.payout,
         }

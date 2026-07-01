@@ -1,4 +1,3 @@
-// Chip.tsx
 import { useEffect, useRef } from 'react';
 import { createDraggable, spring } from 'animejs';
 
@@ -22,7 +21,7 @@ export function Chip({ value }: ChipProps) {
     return (
         <div
             ref={chipRef}
-            data-value={value} // Store the value here for the DOM query
+            data-value={value}
             className="roulette-chip w-10 h-10 bg-teal-600 rounded-full flex items-center justify-center font-bold text-white shadow-lg cursor-grab active:cursor-grabbing select-none border-4 border-dashed border-white ring-4 ring-teal-800 m-4"
         >
             ${value}

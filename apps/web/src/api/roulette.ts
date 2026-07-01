@@ -1,5 +1,4 @@
 import {RouletteSpinRequestDto} from "@shared/schemas/RouletteSpinRequestSchema";
-import {RouletteWinType} from "@shared/enums/RouletteWinTypes";
 import {RouletteBet} from "@shared/types/roulette";
 
 export async function spinRoulette(bets: RouletteBet[]) {
