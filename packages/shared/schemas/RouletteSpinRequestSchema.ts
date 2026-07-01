@@ -1,5 +1,4 @@
 import { z } from "zod";
-import {RouletteWinType} from "../enums/RouletteWinTypes";
 
 const IndividualBetSchema = z.object({
     type: z.union([

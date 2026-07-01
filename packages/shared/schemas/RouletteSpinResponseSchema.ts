@@ -1,5 +1,4 @@
 import { z } from "zod";
-import {RouletteWinType} from "../enums/RouletteWinTypes";
 
 export const RouletteSpinResponseSchema = z.object({
     spinId: z.string(),
