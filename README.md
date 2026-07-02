@@ -1,6 +1,8 @@
 # Was it worth it?
 A real-time data tracking platform exposing the psychological gap in gambling by pairing Server-Sent Events (SSE) with automated loss-tracking analytics.
 
+> **Why this exists:** *Gambling is an issue that many people face in their life one problem is that wins overshadow losses with dopamine hits. When your career loss is tracked a better perspective may be won and hopefully work as a deterrent.*
+
 <img width="800" height="540" alt="Roulette" src="https://github.com/user-attachments/assets/f5debef9-baa1-4c88-bfba-3dba5986211d" />
 
 ## Quick Overview
