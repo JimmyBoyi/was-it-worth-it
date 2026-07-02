@@ -21,7 +21,7 @@ export default function App() {
 
     return (
         <div>
-            <header style={{ background: "#222", color: "#fff", paddingRight: "40px", borderRadius: "8px" }}>
+            <header className="bg-neutral-800 text-white pr-8 rounded-md">
                 <div className="relative grid grid-cols-3 items-center w-full">
                     <div></div>
                     <h1 className="text-center font-bold text-xl">Is It Worth It?</h1>

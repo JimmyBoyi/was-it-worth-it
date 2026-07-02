@@ -41,7 +41,7 @@ export function RollingStrip({config, getFieldColour}: RollingStripProps) {
         <div className="relative w-[600px] my-25 ml-10">
             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-1 h-[100px] bg-[#ffd700] z-10 shadow-[0_0_8px_rgba(255,215,0,0.8)]"/>
             <div className="w-full h-20 bg-[#1a1a1a] border-4 border-[#333] rounded-lg overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
-                <div className={`${wheelConfig.elementSelector} flex w-max h-full`} style={{ transform: 'translateX(0px)' }}>
+                <div className={`${wheelConfig.elementSelector} flex w-max h-full translate-x-0`}>
                     {STRIP.map((value, index) => {
                         const colour = getFieldColour(value);
                         return (
