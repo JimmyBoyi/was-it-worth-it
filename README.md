@@ -28,10 +28,15 @@ A real-time data tracking platform exposing the psychological gap in gambling by
 ### Core Application Features:
 
 * Draggable roulette chips
+  
 * Roulette table to bet on
+  
 * Multiple bets with one spin
+  
 * Global profit tracked
+  
 * Current session profit tracked (Not to localstorage)
+  
 * History of spins of the current session
 
 
