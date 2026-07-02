@@ -1,6 +1,8 @@
 # Was it worth it?
 A real-time data tracking platform exposing the psychological gap in gambling by pairing Server-Sent Events (SSE) with automated loss-tracking analytics.
 
+<img width="800" height="540" alt="Roulette" src="https://github.com/user-attachments/assets/f5debef9-baa1-4c88-bfba-3dba5986211d" />
+
 ## Quick Overview
 
 ### Tech Stack:
@@ -12,13 +14,24 @@ A real-time data tracking platform exposing the psychological gap in gambling by
 * Database & Tools: PostgreSQL, Prisma ORM, Server-Sent Events (SSE), Docker, ESLint
 
 
-### Core Features:
+### Core Technical Features:
 
 * Real-time global statistics streamed instantly via Server-Sent Events (SSE).
 
 * Full-stack TypeScript implementation ensuring end-to-end type safety, further strengthened with Zod.
 
 * Optimized database tracking and event aggregations.
+
+
+### Core Application Features:
+
+* Draggable roulette chips
+* Roulette table to bet on
+* Multiple bets with one spin
+* Global profit tracked
+* Current session profit tracked (Not to localstorage)
+* History of spins of the current session
+
 
 
 ### Installation & Setup:
