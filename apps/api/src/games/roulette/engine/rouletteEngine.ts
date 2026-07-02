@@ -1,19 +1,30 @@
 import {RouletteField} from "../models/RouletteField";
 import {RouletteBetDefinitions, RouletteBetDefinitionType} from "../data/RouletteBetDefinitions";
-import {RouletteWinType} from "../enums/RouletteWinTypes";
+import {RouletteWinType} from "@shared/enums/RouletteWinTypes";
 import {rouletteWheel} from "../data/rouletteWheel";
+import {RouletteBet} from "@shared/types/roulette";
 
 export type RouletteEngineSpinResult = {
+    profit: number,
     payout: number;
-    probability: number;
     rolledField: RouletteField;
+    totalAmountBet: number;
 };
 
 export class RouletteEngine {
-    public spin(betType: RouletteWinType | number, amountBet: number): RouletteEngineSpinResult{
+    public spin(incomingBets: RouletteBet | RouletteBet[]): RouletteEngineSpinResult {
+        const bets = Array.isArray(incomingBets) ? incomingBets : [incomingBets];
+    
         let result = this.simulateSpin();
-        let betDefinition = this.evaluateBet(betType, result);
-        return { payout: amountBet * betDefinition.payoutMultiplier, probability: betDefinition.probability, rolledField: result };
+        let totalPayout = 0;
+        let totalAmountBet = 0;
+    
+        bets.forEach((bet: RouletteBet) => {
+            let betDefinition = this.evaluateBet(bet.type, result);
+            totalPayout += bet.amount * betDefinition.payoutMultiplier;
+            totalAmountBet += bet.amount;
+        });
+        return { profit: totalPayout - totalAmountBet, payout: totalPayout, rolledField: result, totalAmountBet: totalAmountBet };
     }
     
     private simulateSpin(): RouletteField{
@@ -35,8 +46,9 @@ export class RouletteEngine {
 
         return isWin
             ? definitionType
-            : {payoutMultiplier: -1, probability: definitionType.probability};
+            : {payoutMultiplier: 0, probability: definitionType.probability};
     }
+    
     private getBetDefinition(betType: RouletteWinType | number, isNumberBet: boolean): RouletteBetDefinitionType{
         let enumValue: RouletteWinType;
 

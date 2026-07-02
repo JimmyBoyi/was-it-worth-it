@@ -1,75 +1,39 @@
-import { useEffect, useState } from "react";
-
-type Session = {
-  id: string;
-  betAmount: number;
-  result: number;
-  color: string;
-  profit: number;
-};
+import RoulettePage from "./pages/RoulettePage";
+import {GlobalStatsPayload, subscribeToGlobalStats} from "./utils/LiveStatsService";
+import {useEffect, useState} from "react";
+import {useSessionProfit} from "./utils/sessionStore";
 
 export default function App() {
-  const [bet, setBet] = useState(10);
-  const [history, setHistory] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(false);
+    const [globalHouseProfit, setGlobalHouseProfit] = useState<number>(0);
+    const [totalBetsCount, setTotalBetsCount] = useState<number>(0);
 
-  const API = "http://localhost:3001";
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const sessionProfit = useSessionProfit();
 
-  async function spin() {
-    setLoading(true);
+    useEffect(() => {
+        const unsubscribe = subscribeToGlobalStats((latestStats: GlobalStatsPayload) => {
+            setGlobalHouseProfit(latestStats.globalProfit);
+            setTotalBetsCount(latestStats.totalEntries);
+        });
 
-    const res = await fetch(`${API}/roulette/spin`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ betAmount: bet })
-    });
+        return () => unsubscribe();
+    }, []);
 
-    const data = await res.json();
-
-    setHistory([data, ...history]);
-    setLoading(false);
-  }
-
-  async function loadHistory() {
-    const res = await fetch(`${API}/roulette/history`);
-    const data = await res.json();
-    setHistory(data);
-  }
-
-  useEffect(() => {
-    loadHistory();
-  }, []);
-
-  return (
-      <div className="p-6 max-w-xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">
-          Roulette Simulator 🎲
-        </h1>
-
-        <input
-            type="number"
-            value={bet}
-            onChange={(e) => setBet(Number(e.target.value))}
-            className="border p-2 w-full mb-2"
-        />
-
-        <button
-            onClick={spin}
-            disabled={loading}
-            className="bg-black text-white px-4 py-2 w-full"
-        >
-          {loading ? "Spinning..." : "Spin"}
-        </button>
-
-        <div className="mt-6 space-y-2">
-          {history.map((s) => (
-              <div key={s.id} className="border p-2">
-                <div>Result: {s.result}</div>
-                <div>Color: {s.color}</div>
-                <div>Profit: {s.profit}</div>
-              </div>
-          ))}
+    return (
+        <div>
+            <header className="bg-neutral-800 text-white pr-8 rounded-md">
+                <div className="relative grid grid-cols-3 items-center w-full">
+                    <div></div>
+                    <h1 className="text-center font-bold text-xl">Is It Worth It?</h1>
+                    <div className="flex flex-col items-end text-right">
+                        <p>Global Players Profit: <strong>${globalHouseProfit.toFixed(2)}</strong> over {totalBetsCount} spins</p>
+                        <p className="text-sm text-gray-400">This session Profit: <strong>${sessionProfit}</strong></p>
+                        {isLoggedIn ? <p className="text-sm text-gray-400">Your total Profit: <strong>42</strong></p>
+                            : <p className="text-sm text-gray-400">Log in to see personal total profit</p> }
+                    </div>
+                </div>
+            </header>
+            <RoulettePage />
         </div>
-      </div>
-  );
+    );
 }

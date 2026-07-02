@@ -1,55 +1,91 @@
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({
+    path: path.resolve(process.cwd(), ".env"),
+});
 import express from "express";
 import { Request, Response } from "express";
 import cors from "cors";
-import { PrismaClient } from "@prisma/client";
-
-import { RouletteEngine } from "./games/roulette/engine/RouletteEngine";
-import { RouletteWinType } from "./games/roulette/enums/RouletteWinTypes";
-import { SpinRequestDto } from "./dto/SpinRequestDto";
+import { RouletteEngine } from "@games/roulette/engine/rouletteEngine";
+import {prisma} from "@lib/prisma";
+import {GameType} from "./generated/prisma/enums";
+import {RouletteSpinRequestDto} from "@shared/schemas/RouletteSpinRequestSchema";
+import {activeClients, streamGlobalStats} from "./utils/sseManager";
+import {RouletteSpinResponseDto} from "@shared/schemas/RouletteSpinResponseSchema";
+import {RouletteBet} from "@shared/types/roulette";
 
 const app = express();
-const prisma = new PrismaClient();
 const rouletteEngine = new RouletteEngine();
 
-app.use(cors());
+async function pushStatsWhenFirstConnecting(){
+    try {
+        await streamGlobalStats();
+    } catch (error) {
+        console.error("Failed to send initial SSE stats:", error);
+    }
+}
+
+app.use(cors({
+    origin: "http://localhost:5173",
+}));
 app.use(express.json());
 
+app.get("/api/roulette/live-stats", (req: Request, res: Response) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
+    activeClients.push(res);
+
+    pushStatsWhenFirstConnecting();
+    req.on("close", () => {
+        const index = activeClients.indexOf(res);
+        if (index !== -1) {
+            activeClients.splice(index, 1);
+        }
+    });
+});
+
 app.post(
-    "/roulette/spin",
+    "/api/roulette/spin",
     async (
-        req: Request<{}, {}, SpinRequestDto>,
+        req: Request<{}, {}, RouletteSpinRequestDto>,
         res: Response
     ) => {
     try {
-        const {betType, amountBet, userID} = req.body;
-        if (betType === undefined || amountBet === undefined) {
+        const {bets, userId} = req.body;
+        if (bets === undefined) {
             return res.status(400).json({
                 error: "betType and amountBet are required"
             });
         }
+        
+        const result = rouletteEngine.spin(bets as RouletteBet[]);
 
-        const result = rouletteEngine.spin(
-            betType as RouletteWinType | number,
-            Number(amountBet)
-        );
+        let userIdOrZero = userId === undefined ? "0" : userId;
 
-        const savedSpin = await prisma.rouletteSpin.create({
-            data: {
-                betType: String(betType),
-                amountBet,
-                rolledNumber: result.rolledField.number,
-                payoutMultiplier: result.payout,
-                profit: amountBet * result.payout,
-                user: userID | 0
+        const data = {
+            userId: userIdOrZero,
+            gameType: GameType.ROULETTE,
+            betAmount: result.totalAmountBet,
+            profit: result.profit,
+            details: {
+                rolledField: result.rolledField.number,
+                payout: result.payout
             }
-        });
+        };
 
-        return res.status(200).json({
+        const savedSpin = await prisma.bets.create({data});
+        await streamGlobalStats();
+        
+        const response: RouletteSpinResponseDto = {
             spinId: savedSpin.id,
             rolledNumber: result.rolledField.number,
-            payoutMultiplier: result.payout,
-            profit: amountBet * result.payout
-        });
+            profit: result.profit,
+            payout: result.payout,
+        }
+        return res.status(200).json(response);
 
     } catch (error) {
         console.error(error);
@@ -60,6 +96,6 @@ app.post(
     }
 });
 
-app.listen(3001, () => {
-    console.log("Server running on port 3001");
+app.listen(3001, "0.0.0.0", () => {
+    console.log("Server running on IPv4 port 3001");
 });
