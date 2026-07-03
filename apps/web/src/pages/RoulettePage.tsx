@@ -16,12 +16,12 @@ export default function RoulettePage() {
 
     async function handleSpin() {
         setIsLoading(true);
-        resetRouletteWheel();
+        resetRouletteWheel(WHEEL_CONFIGS.ROULETTE.elementSelector);
         const bets = getCompiledBets();
         
         try {
             const res: RouletteSpinResponseDto = await spinRoulette(bets);
-            spinStripAnimate(res.rolledNumber.toString());
+            spinStripAnimate(res.rolledNumber.toString(), WHEEL_CONFIGS.ROULETTE.elementSelector);
             setTimeout(() => {
                 setSpinHistory((prev) => [res, ...prev]);
                 sessionStore.addProfit(res.profit);

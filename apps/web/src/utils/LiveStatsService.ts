@@ -4,7 +4,7 @@ export interface GlobalStatsPayload {
 }
 
 export function subscribeToGlobalStats(onUpdate: (stats: GlobalStatsPayload) => void) {
-    const eventSource = new EventSource("http://localhost:3001/api/roulette/live-stats");
+    const eventSource = new EventSource("http://localhost:3001/api/stats/live-stats");
 
     eventSource.onmessage = (event) => {
         try {
