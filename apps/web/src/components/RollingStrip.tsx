@@ -9,8 +9,8 @@ interface RollingStripProps {
 
 let wheelConfig: WheelConfig;
 
-export function resetRouletteWheel() {
-    animate(`.${wheelConfig.elementSelector}`, {
+export function resetRouletteWheel(elementSelector: string) {
+    animate(`.${elementSelector}`, {
         translateX: 0,
         duration: 0.5,
     });
@@ -25,9 +25,9 @@ function calculateStripSpinDistance(target: string): number {
     return -((fieldIndex * tileWidth) - (viewportWidth / 2) + (tileWidth / 2) + (tileWidth * wheelConfig.wheelContent.length * (wheelConfig.spins - 1)) + randomOffset);
 }
 
-export function spinStripAnimate (target: string) {
+export function spinStripAnimate (target: string, elementSelector: string) {
     const targetX = calculateStripSpinDistance(target);
-    animate(`.${wheelConfig.elementSelector}`, {
+    animate(`.${elementSelector}`, {
         translateX: targetX,
         duration: 5000,
         easing: 'cubic-bezier(0.1, 1, 0.1, 4)',
