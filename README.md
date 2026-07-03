@@ -142,6 +142,8 @@ Looking back to when I first started learning JavaScript during my apprenticeshi
 │   │   │   └── schema.prisma
 │   │   ├── src
 │   │   │   ├── controllers
+│   │   │   │   ├── rouletteController.ts
+│   │   │   │   └── statsController.ts
 │   │   │   ├── db
 │   │   │   ├── games
 │   │   │   │   └── roulette
@@ -172,6 +174,8 @@ Looking back to when I first started learning JavaScript during my apprenticeshi
 │   │   │   │   └── prisma.ts
 │   │   │   ├── middleware
 │   │   │   ├── routes
+│   │   │   │   ├── rouletteRoutes.ts
+│   │   │   │   └── statsRoutes.ts
 │   │   │   ├── server.ts
 │   │   │   ├── services
 │   │   │   ├── types
